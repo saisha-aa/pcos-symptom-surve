@@ -104,6 +104,40 @@
             margin-bottom: 60px;
         }
 
+        .stats-tracker {
+            margin-top: 0px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 0.95em;
+            color: #f5e6d3;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-tracker .stat-number {
+            font-weight: 600;
+            color: #d4a5d6;
+        }
+
+        /* Stats tracker */
+        .stats-tracker {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 25px 35px;
+            margin: 40px auto 60px;
+            max-width: 500px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .stats-tracker .stat-number {
+            color: #8b5a8e;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
         /* Scroll indicator */
         .scroll-indicator {
             position: absolute;
@@ -542,6 +576,10 @@
             <div class="section-content">
                 <h1>You're Not Imagining It</h1>
                 <p class="subtitle">A PCOS awareness tool by someone who's been there</p>
+                <div class="stats-tracker">
+                    Out of <span class="stat-number" id="totalResponses">0</span> people who have taken this assessment, 
+                    <span class="stat-number" id="pcosLikely">0</span> showed symptoms consistent with PCOS.
+                </div>
             </div>
             <div class="scroll-indicator" onclick="scrollToSection('about')">
                 <span class="text">Scroll to Explore</span>
@@ -749,6 +787,50 @@
     <script>
         let answers = {};
 
+        // GOOGLE SHEETS CONFIGURATION
+        // Replace this URL with your Google Apps Script web app URL after deployment
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLLSU2Tz8duyTv8Nisfhedtjo9dmO7EGtUPVcQupKyxQwW9rfdbMls7a-v4ndmTeuj/exec';
+
+        // Load stats on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            fetchStats();
+        });
+
+        function fetchStats() {
+            fetch(GOOGLE_SCRIPT_URL + '?action=getStats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalResponses').textContent = data.total || 0;
+                    document.getElementById('pcosLikely').textContent = data.pcosLikely || 0;
+                })
+                .catch(error => {
+                    console.log('Stats loading failed, using defaults');
+                });
+        }
+
+        function saveToGoogleSheets(score, resultType) {
+            const data = {
+                action: 'saveResponse',
+                timestamp: new Date().toISOString(),
+                answers: answers,
+                score: score,
+                resultType: resultType
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            }).then(() => {
+                fetchStats(); // Refresh stats after saving
+            }).catch(error => {
+                console.log('Failed to save to Google Sheets:', error);
+            });
+        }
+
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
             if (section) {
@@ -858,8 +940,10 @@
                 .join('');
 
             let resultsHTML = '';
+            let resultType = '';
             
             if (score >= 5) {
+                resultType = 'high';
                 // HIGH CONCERN
                 resultsHTML = `
                     <h1>Your Symptoms Are Real - And They Matter</h1>
@@ -921,6 +1005,7 @@
                     <p><strong>You're not imagining this. These symptoms are real, and getting diagnosed can help you manage them.</strong></p>
                 `;
             } else if (score >= 2) {
+                resultType = 'medium';
                 // MEDIUM CONCERN
                 resultsHTML = `
                     <h1>Some Symptoms Worth Monitoring</h1>
@@ -939,9 +1024,10 @@
                     <p>Trust your instincts. If something feels off, it's worth investigating.</p>
                 `;
             } else {
+                resultType = 'low';
                 // LOW CONCERN
                 resultsHTML = `
-                    <h1>PCOS Seems Less Likely - But Trust Yourself</h1>
+                    <h1>PCOS Seems Unlikely</h1>
                     <p>Based on your answers, PCOS doesn't seem likely right now. But that doesn't mean your concerns aren't valid.</p>
                     
                     <h3>If something still feels wrong:</h3>
@@ -956,6 +1042,9 @@
             }
             
             document.getElementById('results-content').innerHTML = resultsHTML;
+            
+            // Save to Google Sheets
+            saveToGoogleSheets(score, resultType);
         }
     </script>
 </body>
