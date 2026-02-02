@@ -82,6 +82,21 @@
         }
 
         /* HEADER SECTION */
+        .header {
+            background: #261a34;
+            color: #f5e6d3;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
         .header .subtitle {
             font-size: 1.3em;
             font-style: italic;
@@ -774,7 +789,7 @@
 
         // GOOGLE SHEETS CONFIGURATION
         // Replace this URL with your Google Apps Script web app URL after deployment
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLLSU2Tz8duyTv8Nisfhedtjo9dmO7EGtUPVcQupKyxQwW9rfdbMls7a-v4ndmTeuj/exec';
+        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 
         // Load stats on page load
         window.addEventListener('DOMContentLoaded', function() {
@@ -931,7 +946,7 @@
                 resultType = 'high';
                 // HIGH CONCERN
                 resultsHTML = `
-                    <h1>PCOS Is Likely</h1>
+                    <h1>Your Symptoms Are Real - And They Matter</h1>
                     <p>If people have told you that your acne will clear up if you just wash your face more, or that you're tired because you're lazy, or that your weight is just about willpower - <strong>they're wrong.</strong></p>
                     
                     <p>These symptoms you're experiencing could be signs of PCOS (Polycystic Ovary Syndrome), a hormonal condition that affects 1 in 10 women. Most people with PCOS don't know they have it because these symptoms get dismissed as "part of being a teenager."</p>
