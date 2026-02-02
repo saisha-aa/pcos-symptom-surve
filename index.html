@@ -151,7 +151,7 @@
             font-size: 2.2em;
             margin-bottom: 25px;
             color: #261a34;
-            font-weight: 400;
+            font-weight: 700;
         }
 
         .story-section p {
@@ -207,6 +207,7 @@
             font-size: 2em;
             margin-bottom: 20px;
             color: #261a34;
+            font-weight: 700;
         }
 
         .mission-section p {
@@ -582,7 +583,7 @@
                 <h2>My Story</h2>
                 <p>I created this tool after being diagnosed with PCOS. But the diagnosis wasn't a problem - it was an answer. Symptoms I had dismissed for years were suddenly connected with a possible solution in sight.</p>
                 
-                <p>Then I realized many women I knew had the same diagnosis. Or worse, they had symptoms but no diagnosis at all. PCOS is severely underresearched, and most people who have it don't even know.</p>
+                <p>I soon realized many women I knew had the same diagnosis. Or worse, they had symptoms but no diagnosis at all. PCOS is severely underresearched, and most people who have it don't even know.</p>
 
                 <p>If you've been told your irregular periods are just stress, your acne is a hygiene issue, or your fatigue means you're lazy - this is for you.</p>
 
@@ -803,27 +804,6 @@
             window.scrollTo(0, 0);
         }
 
-        function generateSymptomList() {
-            let symptoms = [];
-            
-            if (answers.q1 === 'irregular' || answers.q1 === 'none') symptoms.push("irregular periods");
-            if (answers.q2 === 'mild' || answers.q2 === 'severe') symptoms.push("persistent acne");
-            if (answers.q3 === 'mild' || answers.q3 === 'severe') symptoms.push("oily skin");
-            if (answers.q4 === 'mild' || answers.q4 === 'severe') symptoms.push("dark skin patches");
-            if (answers.q5 === 'mild' || answers.q5 === 'severe') symptoms.push("excess hair growth");
-            if (answers.q6 === 'mild' || answers.q6 === 'severe') symptoms.push("unexplained weight gain");
-            if (answers.q7 === 'mild' || answers.q7 === 'severe') symptoms.push("hair thinning");
-            if (answers.q8 === 'mild' || answers.q8 === 'severe') symptoms.push("persistent dandruff");
-            if (answers.q9 === 'mild' || answers.q9 === 'severe') symptoms.push("fatigue and brain fog");
-            if (answers.q10 === 'mild' || answers.q10 === 'severe') symptoms.push("mood swings");
-            
-            if (symptoms.length === 0) return "these symptoms";
-            if (symptoms.length === 1) return symptoms[0];
-            if (symptoms.length === 2) return symptoms[0] + " and " + symptoms[1];
-            
-            return symptoms.slice(0, -1).join(", ") + ", and " + symptoms[symptoms.length - 1];
-        }
-
         function showResults() {
             document.getElementById('question-11').style.display = 'none';
             document.getElementById('results').style.display = 'block';
@@ -859,38 +839,23 @@
             if (answers.q8 === 'mild') score += 0.25;
 
             // Generate personalized symptom explanations
-            let symptomExplanations = [];
-            
-            if (answers.q1 === 'irregular' || answers.q1 === 'none') {
-                symptomExplanations.push("The irregular periods? A key sign that your hormones are out of balance.");
-            }
-            if (answers.q2 === 'mild' || answers.q2 === 'severe') {
-                symptomExplanations.push("The acne? Hormonal, not a hygiene issue.");
-            }
-            if (answers.q3 === 'mild' || answers.q3 === 'severe') {
-                symptomExplanations.push("The oily skin? Caused by elevated androgen levels, not because you're not washing enough.");
-            }
-            if (answers.q4 === 'mild' || answers.q4 === 'severe') {
-                symptomExplanations.push("Those dark patches on your skin? That's likely insulin resistance - not dirt.");
-            }
-            if (answers.q5 === 'mild' || answers.q5 === 'severe') {
-                symptomExplanations.push("The extra hair growth? That's from elevated androgens (male hormones that all women have, but yours might be higher).");
-            }
-            if (answers.q6 === 'mild' || answers.q6 === 'severe') {
-                symptomExplanations.push("The weight gain that won't budge? Often tied to insulin resistance, not a lack of willpower.");
-            }
-            if (answers.q7 === 'mild' || answers.q7 === 'severe') {
-                symptomExplanations.push("The hair thinning on your head? Another sign of hormonal imbalance.");
-            }
-            if (answers.q8 === 'mild' || answers.q8 === 'severe') {
-                symptomExplanations.push("The persistent dandruff? Related to increased oil production from hormonal changes.");
-            }
-            if (answers.q9 === 'mild' || answers.q9 === 'severe') {
-                symptomExplanations.push("The fatigue and brain fog? Your body is dealing with a hormone imbalance and possibly insulin resistance.");
-            }
-            if (answers.q10 === 'mild' || answers.q10 === 'severe') {
-                symptomExplanations.push("The mood swings, anxiety, or depression? PCOS affects mental health - it's not just 'in your head.'");
-            }
+            const symptomMap = {
+                q1: { check: ['irregular', 'none'], text: "The irregular periods? A key sign that your hormones are out of balance." },
+                q2: { check: ['mild', 'severe'], text: "The acne? Hormonal, not a hygiene issue." },
+                q3: { check: ['mild', 'severe'], text: "The oily skin? Caused by elevated androgen levels, not because you're not washing enough." },
+                q4: { check: ['mild', 'severe'], text: "Those dark patches on your skin? That's likely insulin resistance - not dirt." },
+                q5: { check: ['mild', 'severe'], text: "The extra hair growth? That's from elevated androgens (male hormones that all women have, but yours might be higher)." },
+                q6: { check: ['mild', 'severe'], text: "The weight gain that won't budge? Often tied to insulin resistance, not a lack of willpower." },
+                q7: { check: ['mild', 'severe'], text: "The hair thinning on your head? Another sign of hormonal imbalance." },
+                q8: { check: ['mild', 'severe'], text: "The persistent dandruff? Related to increased oil production from hormonal changes." },
+                q9: { check: ['mild', 'severe'], text: "The fatigue and brain fog? Your body is dealing with a hormone imbalance and possibly insulin resistance." },
+                q10: { check: ['mild', 'severe'], text: "The mood swings, anxiety, or depression? PCOS affects mental health - it's not just 'in your head.'" }
+            };
+
+            let symptomExplanations = Object.keys(symptomMap)
+                .filter(q => symptomMap[q].check.includes(answers[q]))
+                .map(q => '<li>' + symptomMap[q].text + '</li>')
+                .join('');
 
             let resultsHTML = '';
             
@@ -903,14 +868,12 @@
                     <p>These symptoms you're experiencing could be signs of PCOS (Polycystic Ovary Syndrome), a hormonal condition that affects 1 in 10 women. Most people with PCOS don't know they have it because these symptoms get dismissed as "part of being a teenager."</p>
                     
                     <h3>What's actually happening:</h3>
-                    <ul class="symptom-list">
-                        ${symptomExplanations.map(exp => '<li>' + exp + '</li>').join('')}
-                    </ul>
+                    <ul class="symptom-list">${symptomExplanations}</ul>
                     
                     <p><strong>You deserve to be taken seriously.</strong></p>
                     
                     <h3>How to talk to your doctor:</h3>
-                    <p>Say this: <em>"I've been tracking these symptoms: ${generateSymptomList()}. I've read that these could be signs of PCOS. Can we do blood work to check my hormone levels and test for insulin resistance?"</em></p>
+                    <p>Say this: <em>"I've been tracking these symptoms: [list the symptoms you marked]. I've read that these could be signs of PCOS. Can we do blood work to check my hormone levels and test for insulin resistance?"</em></p>
                     
                     <h3>What tests to ask for:</h3>
                     <ul>
@@ -971,7 +934,7 @@
                     </ul>
                     
                     <h3>If you decide to talk to your doctor:</h3>
-                    <p>Say: <em>"I've noticed these symptoms: ${generateSymptomList()}. They've been going on for [timeframe]. Could we do some testing to figure out what's causing them?"</em></p>
+                    <p>Say: <em>"I've noticed these symptoms: [list the symptoms you marked]. They've been going on for [timeframe]. Could we do some testing to figure out what's causing them?"</em></p>
                     
                     <p>Trust your instincts. If something feels off, it's worth investigating.</p>
                 `;
