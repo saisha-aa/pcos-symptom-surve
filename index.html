@@ -19,6 +19,10 @@
             overflow-x: hidden;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         /* NAVIGATION */
         nav {
             position: fixed;
@@ -105,24 +109,6 @@
         }
 
         .stats-tracker {
-            margin-top: 0px;
-            padding: 20px 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            font-size: 0.95em;
-            color: #f5e6d3;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .stats-tracker .stat-number {
-            font-weight: 600;
-            color: #d4a5d6;
-        }
-
-        /* Stats tracker */
-        .stats-tracker {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             padding: 25px 35px;
@@ -130,6 +116,12 @@
             max-width: 500px;
             font-size: 0.95em;
             line-height: 1.6;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .stats-tracker.loaded {
+            opacity: 1;
         }
 
         .stats-tracker .stat-number {
@@ -523,11 +515,6 @@
             display: none;
         }
 
-        /* SMOOTH SCROLLING */
-        html {
-            scroll-behavior: smooth;
-        }
-
         @media (max-width: 768px) {
             nav .container {
                 padding: 0 20px;
@@ -788,10 +775,8 @@
         let answers = {};
 
         // GOOGLE SHEETS CONFIGURATION
-        // Replace this URL with your Google Apps Script web app URL after deployment
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLLSU2Tz8duyTv8Nisfhedtjo9dmO7EGtUPVcQupKyxQwW9rfdbMls7a-v4ndmTeuj/exec';
 
-        // Load stats on page load
         window.addEventListener('DOMContentLoaded', function() {
             fetchStats();
         });
@@ -802,9 +787,11 @@
                 .then(data => {
                     document.getElementById('totalResponses').textContent = data.total || 0;
                     document.getElementById('pcosLikely').textContent = data.pcosLikely || 0;
+                    document.querySelector('.stats-tracker').classList.add('loaded');
                 })
                 .catch(error => {
                     console.log('Stats loading failed, using defaults');
+                    document.querySelector('.stats-tracker').classList.add('loaded');
                 });
         }
 
@@ -825,7 +812,7 @@
                 },
                 body: JSON.stringify(data)
             }).then(() => {
-                fetchStats(); // Refresh stats after saving
+                fetchStats();
             }).catch(error => {
                 console.log('Failed to save to Google Sheets:', error);
             });
@@ -855,34 +842,28 @@
             document.getElementById('landing').classList.remove('hidden');
             document.getElementById('mainNav').style.display = 'block';
             
-            // Hide all questions and results
             for (let i = 1; i <= 11; i++) {
                 document.getElementById('question-' + i).style.display = 'none';
             }
             document.getElementById('results').style.display = 'none';
             
-            // Reset answers
             answers = {};
             
-            // Uncheck all radio buttons
             const radios = document.querySelectorAll('input[type="radio"]');
             radios.forEach(radio => radio.checked = false);
             
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function nextQuestion(current) {
             document.getElementById('question-' + current).style.display = 'none';
-            var next = current + 1;
-            document.getElementById('question-' + next).style.display = 'block';
+            document.getElementById('question-' + (current + 1)).style.display = 'block';
             window.scrollTo(0, 0);
         }
 
         function previousQuestion(current) {
             document.getElementById('question-' + current).style.display = 'none';
-            var previous = current - 1;
-            document.getElementById('question-' + previous).style.display = 'block';
+            document.getElementById('question-' + (current - 1)).style.display = 'block';
             window.scrollTo(0, 0);
         }
 
@@ -891,18 +872,14 @@
             document.getElementById('results').style.display = 'block';
             window.scrollTo(0, 0);
             
-            // WEIGHTED SCORING SYSTEM
             let score = 0;
             
-            // MAJOR SYMPTOMS (2 points each)
             if (answers.q1 === 'irregular') score += 2;
             if (answers.q1 === 'none') score += 2.5;
             if (answers.q4 === 'severe') score += 2;
             if (answers.q4 === 'mild') score += 1;
             if (answers.q5 === 'severe') score += 2;
             if (answers.q5 === 'mild') score += 1;
-            
-            // MODERATE SYMPTOMS (1 point each)
             if (answers.q2 === 'severe') score += 1;
             if (answers.q2 === 'mild') score += 0.5;
             if (answers.q6 === 'severe') score += 1;
@@ -913,14 +890,11 @@
             if (answers.q9 === 'mild') score += 0.5;
             if (answers.q10 === 'severe') score += 1;
             if (answers.q10 === 'mild') score += 0.5;
-            
-            // MINOR SYMPTOMS (0.5 points each)
             if (answers.q3 === 'severe') score += 0.5;
             if (answers.q3 === 'mild') score += 0.25;
             if (answers.q8 === 'severe') score += 0.5;
             if (answers.q8 === 'mild') score += 0.25;
 
-            // Generate personalized symptom explanations
             const symptomMap = {
                 q1: { check: ['irregular', 'none'], text: "The irregular periods? A key sign that your hormones are out of balance." },
                 q2: { check: ['mild', 'severe'], text: "The acne? Hormonal, not a hygiene issue." },
@@ -944,7 +918,6 @@
             
             if (score >= 5) {
                 resultType = 'high';
-                // HIGH CONCERN
                 resultsHTML = `
                     <h1>PCOS is Likely</h1>
                     <p>If people have told you that your acne will clear up if you just wash your face more, or that you're tired because you're lazy, or that your weight is just about willpower - <strong>they're wrong.</strong></p>
@@ -1006,7 +979,6 @@
                 `;
             } else if (score >= 2) {
                 resultType = 'medium';
-                // MEDIUM CONCERN
                 resultsHTML = `
                     <h1>Some Symptoms Worth Monitoring</h1>
                     <p>You have a few symptoms that <em>could</em> be related to PCOS, though they might also be caused by other things (stress, thyroid issues, normal hormone fluctuations).</p>
@@ -1025,7 +997,6 @@
                 `;
             } else {
                 resultType = 'low';
-                // LOW CONCERN
                 resultsHTML = `
                     <h1>PCOS Seems Unlikely</h1>
                     <p>Based on your answers, PCOS doesn't seem likely right now. But that doesn't mean your concerns aren't valid.</p>
@@ -1042,8 +1013,6 @@
             }
             
             document.getElementById('results-content').innerHTML = resultsHTML;
-            
-            // Save to Google Sheets
             saveToGoogleSheets(score, resultType);
         }
     </script>
