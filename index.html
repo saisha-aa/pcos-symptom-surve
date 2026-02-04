@@ -912,7 +912,7 @@
             const timeout = setTimeout(() => {
                 console.log('Stats loading timeout - showing tracker anyway');
                 document.querySelector('.stats-tracker').classList.add('loaded');
-            }, 2000);
+            }, 3000);
             
             fetch(GOOGLE_SCRIPT_URL + '?action=getStats')
                 .then(response => response.json())
@@ -1243,7 +1243,7 @@
             const emailInput = document.getElementById('emailInput');
             const submitBtn = document.getElementById('advocacySubmit');
             const thankYou = document.getElementById('advocacyThankYou');
-
+        
             const advocacyData = {
                 action: 'saveAdvocacy',
                 timestamp: new Date().toISOString(),
@@ -1251,15 +1251,14 @@
                 email: emailCheckbox.checked ? emailInput.value : '',
                 interestedInAdvocacy: advocacyCheckbox.checked
             };
-
+        
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
-
+        
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'text/plain',
                 },
                 body: JSON.stringify(advocacyData)
             }).then(() => {
