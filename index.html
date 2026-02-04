@@ -912,7 +912,7 @@
             const timeout = setTimeout(() => {
                 console.log('Stats loading timeout - showing tracker anyway');
                 document.querySelector('.stats-tracker').classList.add('loaded');
-            }, 3000);
+            }, 2000);
             
             fetch(GOOGLE_SCRIPT_URL + '?action=getStats')
                 .then(response => response.json())
