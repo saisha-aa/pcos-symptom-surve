@@ -907,16 +907,23 @@
         window.addEventListener('DOMContentLoaded', function() {
             fetchStats();
         });
-
+        
         function fetchStats() {
+            const timeout = setTimeout(() => {
+                console.log('Stats loading timeout - showing tracker anyway');
+                document.querySelector('.stats-tracker').classList.add('loaded');
+            }, 3000);
+            
             fetch(GOOGLE_SCRIPT_URL + '?action=getStats')
                 .then(response => response.json())
                 .then(data => {
+                    clearTimeout(timeout);
                     document.getElementById('totalResponses').textContent = data.total || 0;
                     document.getElementById('pcosLikely').textContent = data.pcosLikely || 0;
                     document.querySelector('.stats-tracker').classList.add('loaded');
                 })
                 .catch(error => {
+                    clearTimeout(timeout);
                     console.log('Stats loading failed, using defaults');
                     document.querySelector('.stats-tracker').classList.add('loaded');
                 });
