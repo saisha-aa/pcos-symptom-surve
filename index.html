@@ -507,6 +507,119 @@
             line-height: 1.6;
         }
 
+        .advocacy-section {
+            background: #f0e8f5;
+            border-left: 5px solid #8b5a8e;
+            padding: 35px;
+            margin: 40px 0 0 0;
+            border-radius: 4px;
+        }
+
+        .advocacy-section h3 {
+            color: #261a34;
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            margin-top: 0;
+        }
+
+        .advocacy-option {
+            margin: 25px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .advocacy-option:hover {
+            border-color: #d4a5d6;
+        }
+
+        .advocacy-option label {
+            cursor: pointer;
+            font-size: 1.05em;
+            line-height: 1.6;
+            color: #333;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .advocacy-option input[type="checkbox"] {
+            margin-top: 4px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #8b5a8e;
+            flex-shrink: 0;
+        }
+
+        .email-input-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0d5e5;
+        }
+
+        .email-input-container input[type="email"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #d4a5d6;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Segoe UI', sans-serif;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .email-input-container input[type="email"]:focus {
+            outline: none;
+            border-color: #8b5a8e;
+        }
+
+        .email-input-container input[type="email"]:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .advocacy-submit {
+            margin-top: 25px;
+            background: #8b5a8e;
+            color: white;
+            padding: 14px 35px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .advocacy-submit:hover {
+            background: #7a4a7d;
+            transform: translateY(-2px);
+        }
+
+        .advocacy-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .advocacy-thank-you {
+            display: none;
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 4px;
+            color: #2e7d32;
+        }
+
+        .advocacy-thank-you.visible {
+            display: block;
+        }
+
         .landing-page {
             display: block;
         }
@@ -562,7 +675,7 @@
         <div class="full-section header" id="hero">
             <div class="section-content">
                 <h1>You're Not Imagining It</h1>
-                <p class="subtitle">A PCOS awareness tool by someone who's been there</p>
+                <p class="subtitle">A PCOS awareness tool by someone who's been there.</p>
                 <div class="stats-tracker">
                     Out of <span class="stat-number" id="totalResponses">0</span> people who have taken this assessment, 
                     <span class="stat-number" id="pcosLikely">0</span> showed symptoms consistent with PCOS.
@@ -579,7 +692,7 @@
                 <h2>What is PCOS?</h2>
                 <p>Polycystic Ovary Syndrome (PCOS) is a hormonal disorder that causes irregular periods, acne, weight gain, excess hair growth, and other symptoms. It's incredibly common - affecting about 10% of women - but most people with PCOS don't know they have it.</p>
 
-                <p>Why? Because these symptoms are constantly dismissed as "part of being a teenager" or blamed on not trying hard enough. By the time most people get diagnosed, they've been dealing with symptoms for years.</p>
+                <p>Why? Because these symptoms are constantly dismissed as "just hormones" or blamed on not trying hard enough. By the time most people get diagnosed, they've been dealing with symptoms for years.</p>
             </div>
         </div>
 
@@ -752,13 +865,27 @@
         </div>
 
         <div id="question-11" class="quiz-screen" style="display:none;">
-            <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
-            <h2>How long have you been experiencing these symptoms?</h2>
+            <div class="progress-bar"><div class="progress-fill" style="width: 91%;"></div></div>
+            <h2>How long have you been experiencing the symptoms you marked?</h2>
             <label><input type="radio" name="q11" value="short" onclick="saveAnswer(11, 'short')"> Less than 3 months</label>
             <label><input type="radio" name="q11" value="medium" onclick="saveAnswer(11, 'medium')"> 3-12 months</label>
             <label><input type="radio" name="q11" value="long" onclick="saveAnswer(11, 'long')"> More than a year</label>
             <div class="button-container">
                 <button class="quiz-button back-btn" onclick="previousQuestion(11)">Back</button>
+                <button class="quiz-button" onclick="nextQuestion(11)">Next</button>
+            </div>
+        </div>
+
+        <div id="question-12" class="quiz-screen" style="display:none;">
+            <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+            <h2>What is your age?</h2>
+            <label><input type="radio" name="q12" value="under18" onclick="saveAnswer(12, 'under18')"> Under 18</label>
+            <label><input type="radio" name="q12" value="18-24" onclick="saveAnswer(12, '18-24')"> 18-24</label>
+            <label><input type="radio" name="q12" value="25-34" onclick="saveAnswer(12, '25-34')"> 25-34</label>
+            <label><input type="radio" name="q12" value="35-44" onclick="saveAnswer(12, '35-44')"> 35-44</label>
+            <label><input type="radio" name="q12" value="45+" onclick="saveAnswer(12, '45+')"> 45+</label>
+            <div class="button-container">
+                <button class="quiz-button back-btn" onclick="previousQuestion(12)">Back</button>
                 <button class="quiz-button" onclick="showResults()">See Results</button>
             </div>
         </div>
@@ -842,7 +969,7 @@
             document.getElementById('landing').classList.remove('hidden');
             document.getElementById('mainNav').style.display = 'block';
             
-            for (let i = 1; i <= 11; i++) {
+            for (let i = 1; i <= 12; i++) {
                 document.getElementById('question-' + i).style.display = 'none';
             }
             document.getElementById('results').style.display = 'none';
@@ -880,8 +1007,8 @@
             if (answers.q4 === 'mild') score += 1;
             if (answers.q5 === 'severe') score += 2;
             if (answers.q5 === 'mild') score += 1;
-            if (answers.q2 === 'severe') score += 1;
-            if (answers.q2 === 'mild') score += 0.5;
+            if (answers.q2 === 'severe') score += 1.5;
+            if (answers.q2 === 'mild') score += 1;
             if (answers.q6 === 'severe') score += 1;
             if (answers.q6 === 'mild') score += 0.5;
             if (answers.q7 === 'severe') score += 1;
@@ -976,6 +1103,32 @@
                     </div>
                     
                     <p><strong>You're not imagining this. These symptoms are real, and getting diagnosed can help you manage them.</strong></p>
+
+                    <div class="advocacy-section">
+                        <h3>Want to help others understand PCOS?</h3>
+                        
+                        <div class="advocacy-option">
+                            <label>
+                                <input type="checkbox" id="emailUpdates" onchange="toggleEmailInput()">
+                                <span>Email me updates when we publish findings from this survey (optional - your email stays private and will only be used for survey updates)</span>
+                            </label>
+                            <div class="email-input-container" id="emailInputContainer">
+                                <input type="email" id="emailInput" placeholder="your.email@example.com" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="advocacy-option">
+                            <label>
+                                <input type="checkbox" id="advocacy">
+                                <span>I'd be interested in getting involved with PCOS advocacy in the future</span>
+                            </label>
+                        </div>
+
+                        <button class="advocacy-submit" id="advocacySubmit" onclick="submitAdvocacy()">Submit</button>
+                        <div class="advocacy-thank-you" id="advocacyThankYou">
+                            <strong>Thank you!</strong> Your information has been saved. We'll be in touch if you signed up for updates.
+                        </div>
+                    </div>
                 `;
             } else if (score >= 2) {
                 resultType = 'medium';
@@ -994,6 +1147,32 @@
                     <p>Say: <em>"I've noticed these symptoms: [list the symptoms you marked]. They've been going on for [timeframe]. Could we do some testing to figure out what's causing them?"</em></p>
                     
                     <p>Trust your instincts. If something feels off, it's worth investigating.</p>
+
+                    <div class="advocacy-section">
+                        <h3>Want to help others understand PCOS?</h3>
+                        
+                        <div class="advocacy-option">
+                            <label>
+                                <input type="checkbox" id="emailUpdates" onchange="toggleEmailInput()">
+                                <span>Email me updates when we publish findings from this survey (optional - your email stays private and will only be used for survey updates)</span>
+                            </label>
+                            <div class="email-input-container" id="emailInputContainer">
+                                <input type="email" id="emailInput" placeholder="your.email@example.com" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="advocacy-option">
+                            <label>
+                                <input type="checkbox" id="advocacy">
+                                <span>I'd be interested in getting involved with PCOS advocacy in the future</span>
+                            </label>
+                        </div>
+
+                        <button class="advocacy-submit" id="advocacySubmit" onclick="submitAdvocacy()">Submit</button>
+                        <div class="advocacy-thank-you" id="advocacyThankYou">
+                            <strong>Thank you!</strong> Your information has been saved. We'll be in touch if you signed up for updates.
+                        </div>
+                    </div>
                 `;
             } else {
                 resultType = 'low';
@@ -1009,11 +1188,84 @@
                     </ul>
                     
                     <p><strong>Remember:</strong> This quiz isn't a diagnosis. It's just a tool to help you recognize patterns. If you're concerned, see a healthcare provider.</p>
+
+                    <div class="advocacy-section">
+                        <h3>Want to help others understand PCOS?</h3>
+                        
+                        <div class="advocacy-option">
+                            <label>
+                                <input type="checkbox" id="emailUpdates" onchange="toggleEmailInput()">
+                                <span>Email me updates when we publish findings from this survey (optional - your email stays private and will only be used for survey updates)</span>
+                            </label>
+                            <div class="email-input-container" id="emailInputContainer">
+                                <input type="email" id="emailInput" placeholder="your.email@example.com" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="advocacy-option">
+                            <label>
+                                <input type="checkbox" id="advocacy">
+                                <span>I'd be interested in getting involved with PCOS advocacy in the future</span>
+                            </label>
+                        </div>
+
+                        <button class="advocacy-submit" id="advocacySubmit" onclick="submitAdvocacy()">Submit</button>
+                        <div class="advocacy-thank-you" id="advocacyThankYou">
+                            <strong>Thank you!</strong> Your information has been saved. We'll be in touch if you signed up for updates.
+                        </div>
+                    </div>
                 `;
             }
             
             document.getElementById('results-content').innerHTML = resultsHTML;
             saveToGoogleSheets(score, resultType);
+        }
+
+        function toggleEmailInput() {
+            const checkbox = document.getElementById('emailUpdates');
+            const emailInput = document.getElementById('emailInput');
+            emailInput.disabled = !checkbox.checked;
+            if (!checkbox.checked) {
+                emailInput.value = '';
+            }
+        }
+
+        function submitAdvocacy() {
+            const emailCheckbox = document.getElementById('emailUpdates');
+            const advocacyCheckbox = document.getElementById('advocacy');
+            const emailInput = document.getElementById('emailInput');
+            const submitBtn = document.getElementById('advocacySubmit');
+            const thankYou = document.getElementById('advocacyThankYou');
+
+            const advocacyData = {
+                action: 'saveAdvocacy',
+                timestamp: new Date().toISOString(),
+                wantsEmailUpdates: emailCheckbox.checked,
+                email: emailCheckbox.checked ? emailInput.value : '',
+                interestedInAdvocacy: advocacyCheckbox.checked
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(advocacyData)
+            }).then(() => {
+                submitBtn.style.display = 'none';
+                thankYou.classList.add('visible');
+                emailCheckbox.disabled = true;
+                advocacyCheckbox.disabled = true;
+                emailInput.disabled = true;
+            }).catch(error => {
+                console.log('Failed to save advocacy data:', error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
+            });
         }
     </script>
 </body>
