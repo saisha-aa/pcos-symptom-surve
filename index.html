@@ -1255,23 +1255,28 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
         
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
-                body: JSON.stringify(advocacyData)
-            }).then(() => {
-                submitBtn.style.display = 'none';
-                thankYou.classList.add('visible');
-                emailCheckbox.disabled = true;
-                advocacyCheckbox.disabled = true;
-                emailInput.disabled = true;
-            }).catch(error => {
-                console.log('Failed to save advocacy data:', error);
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit';
-            });
+            // Wait 2 seconds to ensure the quiz response is saved first
+            setTimeout(() => {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: JSON.stringify(advocacyData)
+                }).then(() => {
+                    submitBtn.style.display = 'none';
+                    thankYou.classList.add('visible');
+                    emailCheckbox.disabled = true;
+                    advocacyCheckbox.disabled = true;
+                    emailInput.disabled = true;
+                }).catch(error => {
+                    console.log('Failed to save advocacy data:', error);
+                    alert('There was an error saving your information. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit';
+                });
+            }, 2000);
         }
     </script>
 </body>
