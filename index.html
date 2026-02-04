@@ -900,6 +900,7 @@
 
     <script>
         let answers = {};
+        let currentResponseRow = 0;
 
         // GOOGLE SHEETS CONFIGURATION
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLLSU2Tz8duyTv8Nisfhedtjo9dmO7EGtUPVcQupKyxQwW9rfdbMls7a-v4ndmTeuj/exec';
@@ -952,6 +953,31 @@
             });
         }
 
+        function saveToGoogleSheetsWithRowTracking(score, resultType) {
+            const timestamp = new Date().toISOString();
+            currentResponseRow = timestamp; // Use timestamp as unique ID
+            
+            const data = {
+                action: 'saveResponse',
+                timestamp: timestamp,
+                answers: answers,
+                score: score,
+                resultType: resultType
+            };
+        
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: JSON.stringify(data)
+            }).then(() => {
+                fetchStats();
+            }).catch(error => {
+                console.log('Failed to save to Google Sheets:', error);
+            });
+        }
+        
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
             if (section) {
@@ -1000,7 +1026,7 @@
             document.getElementById('question-' + (current - 1)).style.display = 'block';
             window.scrollTo(0, 0);
         }
-
+        
         function showResults() {
             document.getElementById('question-12').style.display = 'none';
             document.getElementById('results').style.display = 'block';
@@ -1028,7 +1054,7 @@
             if (answers.q3 === 'mild') score += 0.25;
             if (answers.q8 === 'severe') score += 0.5;
             if (answers.q8 === 'mild') score += 0.25;
-
+        
             const symptomMap = {
                 q1: { check: ['irregular', 'none'], text: "The irregular periods? A key sign that your hormones are out of balance." },
                 q2: { check: ['mild', 'severe'], text: "The acne? Hormonal, not a hygiene issue." },
@@ -1041,6 +1067,31 @@
                 q9: { check: ['mild', 'severe'], text: "The fatigue and brain fog? Your body is dealing with a hormone imbalance and possibly insulin resistance." },
                 q10: { check: ['mild', 'severe'], text: "The drastic mood swings, anxiety, or depression? PCOS affects mental health, it is not just 'in your head.'" }
             };
+        
+            let symptomExplanations = Object.keys(symptomMap)
+                .filter(q => symptomMap[q].check.includes(answers[q]))
+                .map(q => '<li>' + symptomMap[q].text + '</li>')
+                .join('');
+        
+            let resultsHTML = '';
+            let resultType = '';
+            
+            if (score >= 5) {
+                resultType = 'high';
+                resultsHTML = `[ALL YOUR HIGH RESULTS HTML - keep it exactly as is]`;
+            } else if (score >= 2) {
+                resultType = 'medium';
+                resultsHTML = `[ALL YOUR MEDIUM RESULTS HTML - keep it exactly as is]`;
+            } else {
+                resultType = 'low';
+                resultsHTML = `[ALL YOUR LOW RESULTS HTML - keep it exactly as is]`;
+            }
+            
+            document.getElementById('results-content').innerHTML = resultsHTML;
+            
+            // Save and get the row number back
+            saveToGoogleSheetsWithRowTracking(score, resultType);
+        }
 
             let symptomExplanations = Object.keys(symptomMap)
                 .filter(q => symptomMap[q].check.includes(answers[q]))
@@ -1247,6 +1298,7 @@
             const advocacyData = {
                 action: 'saveAdvocacy',
                 timestamp: new Date().toISOString(),
+                responseTimestamp: currentResponseRow, // Link to original response
                 wantsEmailUpdates: emailCheckbox.checked,
                 email: emailCheckbox.checked ? emailInput.value : '',
                 interestedInAdvocacy: advocacyCheckbox.checked
@@ -1255,28 +1307,23 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
         
-            // Wait 2 seconds to ensure the quiz response is saved first
-            setTimeout(() => {
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    redirect: 'follow',
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
-                    body: JSON.stringify(advocacyData)
-                }).then(() => {
-                    submitBtn.style.display = 'none';
-                    thankYou.classList.add('visible');
-                    emailCheckbox.disabled = true;
-                    advocacyCheckbox.disabled = true;
-                    emailInput.disabled = true;
-                }).catch(error => {
-                    console.log('Failed to save advocacy data:', error);
-                    alert('There was an error saving your information. Please try again.');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Submit';
-                });
-            }, 2000);
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: JSON.stringify(advocacyData)
+            }).then(() => {
+                submitBtn.style.display = 'none';
+                thankYou.classList.add('visible');
+                emailCheckbox.disabled = true;
+                advocacyCheckbox.disabled = true;
+                emailInput.disabled = true;
+            }).catch(error => {
+                console.log('Failed to save advocacy data:', error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
+            });
         }
     </script>
 </body>
